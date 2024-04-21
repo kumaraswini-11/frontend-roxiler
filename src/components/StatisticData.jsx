@@ -15,7 +15,7 @@ function StatisticData() {
     // IIFE
     (async () => {
       try {
-        const baseUrl = "http://localhost:9000/api/v1";
+        const baseUrl = import.meta.env.VITE_BASE_URL;
         const params = new URLSearchParams({
           month: selectedMonth,
         });
