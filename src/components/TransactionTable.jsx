@@ -1,6 +1,42 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 const TransactionTable = ({ transactions }) => {
+  const { searchQuery } = useSelector((state) => state.transactions);
+  const [highlightedTransactions, setHighlightedTransactions] = useState([]);
+
+  const highlightFields = (fields, searchQuery) => {
+    const manipulateResponse = new RegExp(`(${searchQuery})`, "gi");
+    const highlightedFields = {};
+
+    for (const [key, value] of Object.entries(fields)) {
+      const highlightedValue = String(value).replace(
+        manipulateResponse,
+        '<span style="color:red; font-weight: bold">$1</span>'
+      );
+      highlightedFields[key] = highlightedValue;
+    }
+
+    return highlightedFields;
+  };
+
+  useEffect(() => {
+    const updatedTransactions = transactions.map((item) => {
+      return {
+        ...item,
+        ...highlightFields(
+          {
+            title: item.title,
+            description: item.description,
+            price: item.price,
+          },
+          searchQuery
+        ),
+      };
+    });
+    setHighlightedTransactions(updatedTransactions);
+  }, [transactions, searchQuery]);
+
   return (
     <table>
       <thead>
@@ -15,13 +51,16 @@ const TransactionTable = ({ transactions }) => {
         </tr>
       </thead>
       <tbody>
-        {Array.isArray(transactions) ? (
-          transactions.map((transaction, index) => (
+        {Array.isArray(highlightedTransactions) &&
+        highlightedTransactions.length ? (
+          highlightedTransactions.map((transaction, index) => (
             <tr key={transaction._id}>
               <td>{index + 1}</td>
-              <td>{transaction.title}</td>
-              <td>{transaction.description}</td>
-              <td>{transaction.price}</td>
+              <td dangerouslySetInnerHTML={{ __html: transaction.title }}></td>
+              <td
+                dangerouslySetInnerHTML={{ __html: transaction.description }}
+              ></td>
+              <td dangerouslySetInnerHTML={{ __html: transaction.price }}></td>
               <td>{transaction.category}</td>
               <td>{transaction.sold ? "Sold" : "Available"}</td>
               <td>
