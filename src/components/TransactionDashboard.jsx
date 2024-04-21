@@ -29,7 +29,7 @@ const TransactionDashboard = () => {
           page: currentPage,
           perPage: perPage,
         });
-        const url = `${baseUrl}/all-transactions?${params.toString()}`;
+        const url = `${baseUrl}/api/v1/all-transactions?${params.toString()}`;
 
         const response = await axios.get(url, { signal });
         setTransactions(response.data.data);

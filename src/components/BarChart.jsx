@@ -59,7 +59,7 @@ const BarChartDiagram = () => {
       try {
         const baseUrl = import.meta.env.VITE_BASE_URL;
         const params = new URLSearchParams({ month: selectedMonth });
-        const url = `${baseUrl}/bar-chart-data?${params.toString()}`;
+        const url = `${baseUrl}/api/v1/bar-chart-data?${params.toString()}`;
 
         const response = await axios.get(url, { signal });
         const data = response.data;

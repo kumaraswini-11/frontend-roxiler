@@ -19,7 +19,7 @@ function StatisticData() {
         const params = new URLSearchParams({
           month: selectedMonth,
         });
-        const url = `${baseUrl}/statistics?${params.toString()}`;
+        const url = `${baseUrl}/api/v1/statistics?${params.toString()}`;
 
         const response = await axios.get(url, { signal });
         setStatistic([response.data]);
