@@ -23,18 +23,6 @@ const TransactionTable = ({ transactions }) => {
     return highlightedFields;
   };
 
-  const handleOnClick = async (id) => {
-    const deleteURL = `${import.meta.env.VITE_BASE_URL}/delete`;
-
-    try {
-      const res = await axios.delete(
-        `${deleteURL}/?id=${id}&month=${selectedMonth}`
-      );
-    } catch (error) {
-      console.error("Error deleting record:", error);
-    }
-  };
-
   useEffect(() => {
     const updatedTransactions = transactions.map((item) => ({
       ...item,
@@ -61,7 +49,6 @@ const TransactionTable = ({ transactions }) => {
           <th>Category</th>
           <th>Sold</th>
           <th>Image</th>
-          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -83,11 +70,6 @@ const TransactionTable = ({ transactions }) => {
                   alt={transaction.title}
                   style={{ width: "50px" }}
                 />
-              </td>
-              <td>
-                <button onClick={() => handleOnClick(transaction._id)}>
-                  Delete
-                </button>
               </td>
             </tr>
           ))

@@ -14,7 +14,7 @@ const TransactionDashboard = () => {
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalTransactions, setTotalTransactions] = useState(0);
-  const [perPage, setPerPage] = useState(5);
+  const [perPage, setPerPage] = useState(10);
 
   useEffect(() => {
     const controller = new AbortController();
