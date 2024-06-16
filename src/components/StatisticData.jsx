@@ -5,26 +5,22 @@ import "../styles/statistic.css";
 
 function StatisticData() {
   const { selectedMonth } = useSelector((state) => state.transactions);
-
   const [statistic, setStatistic] = useState([]);
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    // IIFE
     (async () => {
       try {
         const baseUrl = import.meta.env.VITE_BASE_URL;
-        const params = new URLSearchParams({
-          month: selectedMonth,
-        });
+        const params = new URLSearchParams({ month: selectedMonth });
         const url = `${baseUrl}/statistics?${params.toString()}`;
 
         const response = await axios.get(url, { signal });
         setStatistic([response.data]);
       } catch (error) {
-        console.error("ERROR: ", error);
+        console.error("Error fetching statistics:", error);
       }
     })();
 
@@ -36,15 +32,15 @@ function StatisticData() {
   return (
     <section>
       <p>
-        Statistics - {"  "}
+        Statistics -{" "}
         {new Date(0, selectedMonth - 1).toLocaleString("en", {
           month: "short",
         })}
-        <span>{"  "}(Selected month and year from dropdown)</span>
+        <span> (Selected month)</span>
       </p>
 
       {statistic.map((el, index) => (
-        <div key={index + 1} className="statisticSection">
+        <div key={index} className="statisticSection">
           <label>
             <span className="statisticText">Total sale</span>{" "}
             <span className="statisticValue">
@@ -52,11 +48,11 @@ function StatisticData() {
             </span>
           </label>
           <label>
-            <span className="statisticText">Total sold item </span>{" "}
+            <span className="statisticText">Total sold items</span>{" "}
             <span className="statisticValue">{el.totalSoldItems}</span>
           </label>
           <label>
-            <span className="statisticText">Total not sold item </span>{" "}
+            <span className="statisticText">Total not sold items</span>{" "}
             <span className="statisticValue">{el.totalNotSoldItems}</span>
           </label>
         </div>

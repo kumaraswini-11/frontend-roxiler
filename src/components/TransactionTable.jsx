@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import axios from "axios";
 
 const TransactionTable = ({ transactions }) => {
-  const { searchQuery } = useSelector((state) => state.transactions);
+  const { searchQuery, selectedMonth } = useSelector(
+    (state) => state.transactions
+  );
   const [highlightedTransactions, setHighlightedTransactions] = useState([]);
 
   const highlightFields = (fields, searchQuery) => {
@@ -20,20 +23,30 @@ const TransactionTable = ({ transactions }) => {
     return highlightedFields;
   };
 
+  const handleOnClick = async (id) => {
+    const deleteURL = `${import.meta.env.VITE_BASE_URL}/delete`;
+
+    try {
+      const res = await axios.delete(
+        `${deleteURL}/?id=${id}&month=${selectedMonth}`
+      );
+    } catch (error) {
+      console.error("Error deleting record:", error);
+    }
+  };
+
   useEffect(() => {
-    const updatedTransactions = transactions.map((item) => {
-      return {
-        ...item,
-        ...highlightFields(
-          {
-            title: item.title,
-            description: item.description,
-            price: item.price,
-          },
-          searchQuery
-        ),
-      };
-    });
+    const updatedTransactions = transactions.map((item) => ({
+      ...item,
+      ...highlightFields(
+        {
+          title: item.title,
+          description: item.description,
+          price: item.price,
+        },
+        searchQuery
+      ),
+    }));
     setHighlightedTransactions(updatedTransactions);
   }, [transactions, searchQuery]);
 
@@ -48,6 +61,7 @@ const TransactionTable = ({ transactions }) => {
           <th>Category</th>
           <th>Sold</th>
           <th>Image</th>
+          <th>Action</th>
         </tr>
       </thead>
       <tbody>
@@ -70,11 +84,16 @@ const TransactionTable = ({ transactions }) => {
                   style={{ width: "50px" }}
                 />
               </td>
+              <td>
+                <button onClick={() => handleOnClick(transaction._id)}>
+                  Delete
+                </button>
+              </td>
             </tr>
           ))
         ) : (
           <tr>
-            <td colSpan="7">No transactions found</td>
+            <td colSpan="8">No transactions found</td>
           </tr>
         )}
       </tbody>

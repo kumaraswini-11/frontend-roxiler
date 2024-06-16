@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentPage } from "../redux/slices/transactionsSlice";
-import { TransactionFilter, TransactionTable } from "./index.js";
+import TransactionFilter from "./TransactionFilter";
+import TransactionTable from "./TransactionTable";
 import "../styles/Transaction.css";
 
 const TransactionDashboard = () => {
@@ -12,13 +13,13 @@ const TransactionDashboard = () => {
   );
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [perPage, setPerPage] = useState(10);
+  const [totalTransactions, setTotalTransactions] = useState(0);
+  const [perPage, setPerPage] = useState(5);
 
   useEffect(() => {
     const controller = new AbortController();
     const signal = controller.signal;
 
-    // IIFE
     (async () => {
       setLoading(true);
       try {
@@ -33,20 +34,24 @@ const TransactionDashboard = () => {
 
         const response = await axios.get(url, { signal });
         setTransactions(response.data.data);
+        setTotalTransactions(response.data.totalRecords);
       } catch (error) {
-        console.log("ERROR:: ", error);
+        if (axios.isCancel(error)) {
+          console.log("Request canceled", error.message);
+        } else {
+          console.error("Error fetching transactions:", error);
+        }
       } finally {
         setLoading(false);
       }
     })();
 
-    // cleanup
     return () => {
       controller.abort();
     };
   }, [selectedMonth, searchQuery, currentPage, perPage]);
 
-  const totalPages = Math.ceil(transactions.length / perPage);
+  const totalPages = Math.ceil(totalTransactions / perPage);
 
   const handlePrevPage = () => {
     if (currentPage > 1) {
